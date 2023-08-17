@@ -353,7 +353,7 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 	events := make(chan accounts.WalletEvent, 16)
 	stack.AccountManager().Subscribe(events)
 
-	// Create a client to interact with local geth node.
+	// Create a client to interact with local geth node. rpc 创建rpc客户端
 	rpcClient := stack.Attach()
 	ethClient := ethclient.NewClient(rpcClient)
 

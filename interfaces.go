@@ -152,7 +152,7 @@ type ContractCaller interface {
 	CallContract(ctx context.Context, call CallMsg, blockNumber *big.Int) ([]byte, error)
 }
 
-// FilterQuery contains options for contract log filtering.
+// FilterQuery contains options for contract log filtering. 过滤查询
 type FilterQuery struct {
 	BlockHash *common.Hash     // used by eth_getLogs, return logs only from block with this hash
 	FromBlock *big.Int         // beginning of the queried range, nil means genesis block
