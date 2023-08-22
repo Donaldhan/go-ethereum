@@ -351,6 +351,7 @@ func (api *FilterAPI) GetLogs(ctx context.Context, crit FilterCriteria) ([]*type
 		filter = api.sys.NewRangeFilter(begin, end, crit.Addresses, crit.Topics)
 	}
 	// Run the filter and return all the logs
+	// 过滤所有的日志
 	logs, err := filter.Logs(ctx)
 	if err != nil {
 		return nil, err

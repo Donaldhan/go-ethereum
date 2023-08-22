@@ -155,15 +155,15 @@ type ContractCaller interface {
 // FilterQuery contains options for contract log filtering. 过滤查询
 type FilterQuery struct {
 	BlockHash *common.Hash     // used by eth_getLogs, return logs only from block with this hash
-	FromBlock *big.Int         // beginning of the queried range, nil means genesis block
-	ToBlock   *big.Int         // end of the range, nil means latest block
-	Addresses []common.Address // restricts matches to events created by specific contracts
+	FromBlock *big.Int         // beginning of the queried range, nil means genesis block 开始区块
+	ToBlock   *big.Int         // end of the range, nil means latest block 结束区块
+	Addresses []common.Address // restricts matches to events created by specific contracts 事件合约
 
 	// The Topic list restricts matches to particular event topics. Each event has a list
 	// of topics. Topics matches a prefix of that list. An empty element slice matches any
 	// topic. Non-empty elements represent an alternative that matches any of the
 	// contained topics.
-	//
+	// topic 匹配
 	// Examples:
 	// {} or nil          matches any topic list
 	// {{A}}              matches topic A in first position

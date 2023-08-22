@@ -19,7 +19,7 @@ package downloader
 import "fmt"
 
 // SyncMode represents the synchronisation mode of the downloader.
-// It is a uint32 as it is used with atomic operations.
+// It is a uint32 as it is used with atomic operations. 同步模式
 type SyncMode uint32
 
 const (

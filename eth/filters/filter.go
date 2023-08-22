@@ -34,8 +34,8 @@ type Filter struct {
 	addresses []common.Address
 	topics    [][]common.Hash
 
-	block      *common.Hash // Block hash if filtering a single block
-	begin, end int64        // Range interval if filtering multiple blocks
+	block      *common.Hash // Block hash if filtering a single block 过滤单个区块
+	begin, end int64        // Range interval if filtering multiple blocks 过滤的区块
 
 	matcher *bloombits.Matcher
 }
@@ -94,6 +94,7 @@ func newFilter(sys *FilterSystem, addresses []common.Address, topics [][]common.
 
 // Logs searches the blockchain for matching log entries, returning all from the
 // first block that contains matches, updating the start of the filter accordingly.
+// 搜索所有匹配的log
 func (f *Filter) Logs(ctx context.Context) ([]*types.Log, error) {
 	// If we're doing singleton block filtering, execute and return
 	if f.block != nil {
@@ -117,11 +118,11 @@ func (f *Filter) Logs(ctx context.Context) ([]*types.Log, error) {
 		return nil, errors.New("invalid block range")
 	}
 
-	// Short-cut if all we care about is pending logs
+	// Short-cut if all we care about is pending logs  查询pending区块的交易
 	if beginPending && endPending {
 		return f.pendingLogs(), nil
 	}
-
+	//解决块高，确保存在
 	resolveSpecial := func(number int64) (int64, error) {
 		var hdr *types.Header
 		switch number {
@@ -156,7 +157,7 @@ func (f *Filter) Logs(ctx context.Context) ([]*types.Log, error) {
 	if f.end, err = resolveSpecial(f.end); err != nil {
 		return nil, err
 	}
-
+	//过滤日志
 	logChan, errChan := f.rangeLogsAsync(ctx)
 	var logs []*types.Log
 	for {
@@ -180,19 +181,22 @@ func (f *Filter) Logs(ctx context.Context) ([]*types.Log, error) {
 
 // rangeLogsAsync retrieves block-range logs that match the filter criteria asynchronously,
 // it creates and returns two channels: one for delivering log data, and one for reporting errors.
+// 异步抽取匹配的区块日志
 func (f *Filter) rangeLogsAsync(ctx context.Context) (chan *types.Log, chan error) {
 	var (
-		logChan = make(chan *types.Log)
+		logChan = make(chan *types.Log) //log 通道
 		errChan = make(chan error)
 	)
 
 	go func() {
+		//延迟关闭
 		defer func() {
 			close(errChan)
 			close(logChan)
 		}()
 
 		// Gather all indexed logs, and finish with non indexed ones
+		// 收集所有索引indexed日志 and 非索引non indexed logs
 		var (
 			end            = uint64(f.end)
 			size, sections = f.sys.backend.BloomStatus()
@@ -202,12 +206,13 @@ func (f *Filter) rangeLogsAsync(ctx context.Context) (chan *types.Log, chan erro
 			if indexed > end {
 				indexed = end + 1
 			}
+			//索引log
 			if err = f.indexedLogs(ctx, indexed-1, logChan); err != nil {
 				errChan <- err
 				return
 			}
 		}
-
+		//非索引log
 		if err := f.unindexedLogs(ctx, end, logChan); err != nil {
 			errChan <- err
 			return
@@ -220,7 +225,7 @@ func (f *Filter) rangeLogsAsync(ctx context.Context) (chan *types.Log, chan erro
 }
 
 // indexedLogs returns the logs matching the filter criteria based on the bloom
-// bits indexed available locally or via the network.
+// bits indexed available locally or via the network. 返回索引日志
 func (f *Filter) indexedLogs(ctx context.Context, end uint64, logChan chan *types.Log) error {
 	// Create a matcher session and request servicing from the backend
 	matches := make(chan uint64, 64)
@@ -251,10 +256,12 @@ func (f *Filter) indexedLogs(ctx context.Context, end uint64, logChan chan *type
 			if header == nil || err != nil {
 				return err
 			}
+			//检查是否存在匹配日志
 			found, err := f.checkMatches(ctx, header)
 			if err != nil {
 				return err
 			}
+			//写到日志通道
 			for _, log := range found {
 				logChan <- log
 			}
@@ -273,10 +280,12 @@ func (f *Filter) unindexedLogs(ctx context.Context, end uint64, logChan chan *ty
 		if header == nil || err != nil {
 			return err
 		}
+		//获取区块log
 		found, err := f.blockLogs(ctx, header)
 		if err != nil {
 			return err
 		}
+		//写日志到通道
 		for _, log := range found {
 			select {
 			case logChan <- log:
@@ -289,6 +298,7 @@ func (f *Filter) unindexedLogs(ctx context.Context, end uint64, logChan chan *ty
 }
 
 // blockLogs returns the logs matching the filter criteria within a single block.
+// 返回区块匹配的log
 func (f *Filter) blockLogs(ctx context.Context, header *types.Header) ([]*types.Log, error) {
 	if bloomFilter(header.Bloom, f.addresses, f.topics) {
 		return f.checkMatches(ctx, header)

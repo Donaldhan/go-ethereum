@@ -168,8 +168,10 @@ func newClientTransportHTTP(endpoint string, cfg *clientConfig) reconnectFunc {
 	}
 }
 
+// 发送http请求
 func (c *Client) sendHTTP(ctx context.Context, op *requestOp, msg interface{}) error {
 	hc := c.writeConn.(*httpConn)
+	//处理请求
 	respBody, err := hc.doRequest(ctx, msg)
 	if err != nil {
 		return err
@@ -177,6 +179,7 @@ func (c *Client) sendHTTP(ctx context.Context, op *requestOp, msg interface{}) e
 	defer respBody.Close()
 
 	var resp jsonrpcMessage
+	//解码响应
 	batch := [1]*jsonrpcMessage{&resp}
 	if err := json.NewDecoder(respBody).Decode(&resp); err != nil {
 		return err
@@ -201,6 +204,7 @@ func (c *Client) sendBatchHTTP(ctx context.Context, op *requestOp, msgs []*jsonr
 	return nil
 }
 
+// 处理Http rpc请求
 func (hc *httpConn) doRequest(ctx context.Context, msg interface{}) (io.ReadCloser, error) {
 	body, err := json.Marshal(msg)
 	if err != nil {
@@ -225,7 +229,7 @@ func (hc *httpConn) doRequest(ctx context.Context, msg interface{}) (io.ReadClos
 		}
 	}
 
-	// do request
+	// do request 请求
 	resp, err := hc.client.Do(req)
 	if err != nil {
 		return nil, err

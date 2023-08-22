@@ -40,7 +40,7 @@ import (
 	"github.com/gofrs/flock"
 )
 
-// Node is a container on which services can be registered.
+// Node is a container on which services can be registered. 服务容器阶段
 type Node struct {
 	eventmux      *event.TypeMux
 	config        *Config
@@ -48,11 +48,11 @@ type Node struct {
 	log           log.Logger
 	keyDir        string        // key store directory
 	keyDirTemp    bool          // If true, key directory will be removed by Stop
-	dirLock       *flock.Flock  // prevents concurrent use of instance directory
+	dirLock       *flock.Flock  // prevents concurrent use of instance directory 文件锁
 	stop          chan struct{} // Channel to wait for termination notifications
-	server        *p2p.Server   // Currently running P2P networking layer
+	server        *p2p.Server   // Currently running P2P networking layer p2p 网络
 	startStopLock sync.Mutex    // Start/Stop are protected by an additional lock
-	state         int           // Tracks state of node lifecycle
+	state         int           // Tracks state of node lifecycle 节点声明周期状态
 
 	lock          sync.Mutex
 	lifecycles    []Lifecycle // All registered backends, services, and auxiliary services that have a lifecycle
@@ -64,7 +64,7 @@ type Node struct {
 	ipc           *ipcServer  // Stores information about the ipc http server
 	inprocHandler *rpc.Server // In-process RPC request handler to process the API requests
 
-	databases map[*closeTrackingDB]struct{} // All open databases
+	databases map[*closeTrackingDB]struct{} // All open databases 所有db
 }
 
 const (
@@ -120,6 +120,7 @@ func New(conf *Config) (*Node, error) {
 	if err := node.openDataDir(); err != nil {
 		return nil, err
 	}
+	//keystore
 	keyDir, isEphem, err := conf.GetKeyStoreDir()
 	if err != nil {
 		return nil, err
@@ -131,6 +132,7 @@ func New(conf *Config) (*Node, error) {
 	node.accman = accounts.NewManager(&accounts.Config{InsecureUnlockAllowed: conf.InsecureUnlockAllowed})
 
 	// Initialize the p2p server. This creates the node key and discovery databases.
+	//初始化p2p服务
 	node.server.Config.PrivateKey = node.config.NodeKey()
 	node.server.Config.Name = node.config.NodeName()
 	node.server.Config.Logger = node.log
@@ -159,6 +161,7 @@ func New(conf *Config) (*Node, error) {
 
 // Start starts all registered lifecycles, RPC services and p2p networking.
 // Node can only be started once.
+// 启动服务
 func (n *Node) Start() error {
 	n.startStopLock.Lock()
 	defer n.startStopLock.Unlock()
@@ -310,6 +313,7 @@ func (n *Node) stopServices(running []Lifecycle) error {
 	return nil
 }
 
+// 打开数据目录
 func (n *Node) openDataDir() error {
 	if n.config.DataDir == "" {
 		return nil // ephemeral

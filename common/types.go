@@ -35,7 +35,7 @@ import (
 
 // Lengths of hashes and addresses in bytes.
 const (
-	// HashLength is the expected length of the hash
+	// HashLength is the expected length of the hash hash长度
 	HashLength = 32
 	// AddressLength is the expected length of the address
 	AddressLength = 20
@@ -46,7 +46,7 @@ var (
 	addressT = reflect.TypeOf(Address{})
 )
 
-// Hash represents the 32 byte Keccak256 hash of arbitrary data.
+// Hash represents the 32 byte Keccak256 hash of arbitrary data. 256哈希
 type Hash [HashLength]byte
 
 // BytesToHash sets b to hash.

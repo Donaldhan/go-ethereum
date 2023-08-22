@@ -90,22 +90,22 @@ type Config struct {
 	Genesis *core.Genesis `toml:",omitempty"`
 
 	// Protocol options
-	NetworkId uint64 // Network ID to use for selecting peers to connect to
-	SyncMode  downloader.SyncMode
+	NetworkId uint64              // Network ID to use for selecting peers to connect to 网络id
+	SyncMode  downloader.SyncMode //同步模式
 
 	// This can be set to list of enrtree:// URLs which will be queried for
 	// for nodes to connect to.
 	EthDiscoveryURLs  []string
 	SnapDiscoveryURLs []string
 
-	NoPruning  bool // Whether to disable pruning and flush everything to disk
+	NoPruning  bool // Whether to disable pruning and flush everything to disk 是否关闭 prunig和flush到磁盘
 	NoPrefetch bool // Whether to disable prefetching and only load state on demand
 
-	// Deprecated, use 'TransactionHistory' instead.
+	// Deprecated, use 'TransactionHistory' instead. 交易历史
 	TxLookupLimit      uint64 `toml:",omitempty"` // The maximum number of blocks from head whose tx indices are reserved.
 	TransactionHistory uint64 `toml:",omitempty"` // The maximum number of blocks from head whose tx indices are reserved.
-	StateHistory       uint64 `toml:",omitempty"` // The maximum number of blocks from head whose state histories are reserved.
-	StateScheme        string `toml:",omitempty"` // State scheme used to store ethereum state and merkle trie nodes on top
+	StateHistory       uint64 `toml:",omitempty"` // The maximum number of blocks from head whose state histories are reserved. 状态保留的最大历史区块数
+	StateScheme        string `toml:",omitempty"` // State scheme used to store ethereum state and merkle trie nodes on top 状态机制
 
 	// RequiredBlocks is a set of block number -> hash mappings which must be in the
 	// canonical chain of all remote peers. Setting the option makes geth verify the
@@ -135,14 +135,14 @@ type Config struct {
 	// This is the number of blocks for which logs will be cached in the filter system.
 	FilterLogCacheSize int
 
-	// Mining options
+	// Mining options 挖矿参数
 	Miner miner.Config
 
-	// Transaction pool options
+	// Transaction pool options 交易池参数
 	TxPool   legacypool.Config
 	BlobPool blobpool.Config
 
-	// Gas Price Oracle options
+	// Gas Price Oracle options gas的 oralce价格选项
 	GPO gasprice.Config
 
 	// Enables tracking of SHA3 preimages in the VM
@@ -154,7 +154,7 @@ type Config struct {
 	// RPCGasCap is the global gas cap for eth-call variants.
 	RPCGasCap uint64
 
-	// RPCEVMTimeout is the global timeout for eth-call.
+	// RPCEVMTimeout is the global timeout for eth-call. eth-call超时时间
 	RPCEVMTimeout time.Duration
 
 	// RPCTxFeeCap is the global transaction fee(price * gaslimit) cap for

@@ -179,7 +179,7 @@ func (c *callback) makeArgTypes() {
 	}
 }
 
-// call invokes the callback.
+// call invokes the callback. 回调
 func (c *callback) call(ctx context.Context, method string, args []reflect.Value) (res interface{}, errRes error) {
 	// Create the argument slice.
 	fullargs := make([]reflect.Value, 0, 2+len(args))

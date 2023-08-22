@@ -399,6 +399,7 @@ func (ec *Client) NonceAt(ctx context.Context, account common.Address, blockNumb
 // FilterLogs executes a filter query. 过滤查询log
 func (ec *Client) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error) {
 	var result []types.Log
+	//构造参数
 	arg, err := toFilterArg(q)
 	if err != nil {
 		return nil, err
@@ -423,6 +424,7 @@ func (ec *Client) SubscribeFilterLogs(ctx context.Context, q ethereum.FilterQuer
 	return sub, nil
 }
 
+// 构造参数
 func toFilterArg(q ethereum.FilterQuery) (interface{}, error) {
 	arg := map[string]interface{}{
 		"address": q.Addresses,

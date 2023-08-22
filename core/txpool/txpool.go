@@ -231,6 +231,7 @@ func (p *TxPool) loop(head *types.Header, chain BlockChain) {
 
 // SetGasTip updates the minimum gas tip required by the transaction pool for a
 // new transaction, and drops all transactions below this threshold.
+// 设置加入交易池时，新交易需要的最小gas tip， 如果消息tip则，所有交易将会drop掉；
 func (p *TxPool) SetGasTip(tip *big.Int) {
 	for _, subpool := range p.subpools {
 		subpool.SetGasTip(tip)

@@ -560,7 +560,7 @@ func (h *handler) handleSubscribe(cp *callProc, msg *jsonrpcMessage) *jsonrpcMes
 	return h.runMethod(ctx, msg, callb, args)
 }
 
-// runMethod runs the Go callback for an RPC method.
+// runMethod runs the Go callback for an RPC method. 执行rpc方法
 func (h *handler) runMethod(ctx context.Context, msg *jsonrpcMessage, callb *callback, args []reflect.Value) *jsonrpcMessage {
 	result, err := callb.call(ctx, msg.Method, args)
 	if err != nil {

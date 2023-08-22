@@ -74,13 +74,13 @@ type BatchElem struct {
 	Error error
 }
 
-// Client represents a connection to an RPC server.
+// Client represents a connection to an RPC server. rpc server
 type Client struct {
 	idgen    func() ID // for subscriptions
-	isHTTP   bool      // connection type: http, ws or ipc
+	isHTTP   bool      // connection type: http, ws or ipc 连接类型
 	services *serviceRegistry
 
-	idCounter atomic.Uint32
+	idCounter atomic.Uint32 //id计数器
 
 	// This function, if non-nil, is called when the connection is lost.
 	reconnectFunc reconnectFunc
@@ -92,17 +92,18 @@ type Client struct {
 	// writeConn is used for writing to the connection on the caller's goroutine. It should
 	// only be accessed outside of dispatch, with the write lock held. The write lock is
 	// taken by sending on reqInit and released by sending on reqSent.
+	//写连接
 	writeConn jsonWriter
 
 	// for dispatch
 	close       chan struct{}
-	closing     chan struct{}    // closed when client is quitting
-	didClose    chan struct{}    // closed when client quits
+	closing     chan struct{}    // closed when client is quitting 客户端正在退出
+	didClose    chan struct{}    // closed when client quits  客户端退出
 	reconnected chan ServerCodec // where write/reconnect sends the new connection
-	readOp      chan readOp      // read messages
+	readOp      chan readOp      // read messages 读消息
 	readErr     chan error       // errors from read
-	reqInit     chan *requestOp  // register response IDs, takes write lock
-	reqSent     chan error       // signals write completion, releases write lock
+	reqInit     chan *requestOp  // register response IDs, takes write lock 请求id
+	reqSent     chan error       // signals write completion, releases write lock 通知写完成，释放锁
 	reqTimeout  chan *requestOp  // removes response IDs when call timeout expires
 }
 
@@ -279,6 +280,7 @@ func (c *Client) RegisterName(name string, receiver interface{}) error {
 	return c.services.registerName(name, receiver)
 }
 
+// id
 func (c *Client) nextID() json.RawMessage {
 	id := c.idCounter.Add(1)
 	return strconv.AppendUint(nil, uint64(id), 10)
@@ -331,9 +333,10 @@ func (c *Client) Call(result interface{}, method string, args ...interface{}) er
 
 // CallContext performs a JSON-RPC call with the given arguments. If the context is
 // canceled before the call has successfully returned, CallContext returns immediately.
-//
+// CallContext 执行一个json rpc 调用使用给定的参数，再成功返回前如果上下文取消，则立即返回
 // The result must be a pointer so that package json can unmarshal into it. You
 // can also pass nil, in which case the result is ignored.
+// 结果必须可以json unmarshal
 func (c *Client) CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error {
 	if result != nil && reflect.TypeOf(result).Kind() != reflect.Ptr {
 		return fmt.Errorf("call result parameter must be pointer or nil interface: %v", result)
@@ -344,10 +347,11 @@ func (c *Client) CallContext(ctx context.Context, result interface{}, method str
 	}
 	op := &requestOp{
 		ids:  []json.RawMessage{msg.ID},
-		resp: make(chan []*jsonrpcMessage, 1),
+		resp: make(chan []*jsonrpcMessage, 1), //响应chan
 	}
 
 	if c.isHTTP {
+		//http rpc 请求
 		err = c.sendHTTP(ctx, op, msg)
 	} else {
 		err = c.send(ctx, op, msg)
@@ -545,6 +549,7 @@ func (c *Client) SupportsSubscriptions() bool {
 	return !c.isHTTP
 }
 
+// 创建消息
 func (c *Client) newMessage(method string, paramsIn ...interface{}) (*jsonrpcMessage, error) {
 	msg := &jsonrpcMessage{Version: vsn, ID: c.nextID(), Method: method}
 	if paramsIn != nil { // prevent sending "params":null
@@ -558,9 +563,11 @@ func (c *Client) newMessage(method string, paramsIn ...interface{}) (*jsonrpcMes
 
 // send registers op with the dispatch loop, then sends msg on the connection.
 // if sending fails, op is deregistered.
+// 使用dispatch 循环，发送注册op，然后发送消息到连接，如果发送失败，则op注销
 func (c *Client) send(ctx context.Context, op *requestOp, msg interface{}) error {
 	select {
 	case c.reqInit <- op:
+		//写消息
 		err := c.write(ctx, msg, false)
 		c.reqSent <- err
 		return err

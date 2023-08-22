@@ -105,6 +105,7 @@ type Ethereum struct {
 
 // New creates a new Ethereum object (including the
 // initialisation of the common Ethereum object)
+// 创建一个以太坊对象
 func New(stack *node.Node, config *ethconfig.Config) (*Ethereum, error) {
 	// Ensure configuration values are compatible and sane
 	if config.SyncMode == downloader.LightSync {
@@ -409,6 +410,7 @@ func (s *Ethereum) SetEtherbase(etherbase common.Address) {
 // StartMining starts the miner with the given number of CPU threads. If mining
 // is already running, this method adjust the number of threads allowed to use
 // and updates the minimum price required by the transaction pool.
+// 开始使用给定cpu线程的挖矿者，进行挖矿
 func (s *Ethereum) StartMining() error {
 	// If the miner was not running, initialize it
 	if !s.IsMining() {
@@ -416,6 +418,7 @@ func (s *Ethereum) StartMining() error {
 		s.lock.RLock()
 		price := s.gasPrice
 		s.lock.RUnlock()
+		//设置交易 gas tips
 		s.txPool.SetGasTip(price)
 
 		// Configure the local mining address

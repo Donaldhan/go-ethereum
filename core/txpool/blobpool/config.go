@@ -20,9 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 )
 
-// Config are the configuration parameters of the blob transaction pool.
+// Config are the configuration parameters of the blob transaction pool. 交易池配置参数
 type Config struct {
-	Datadir   string // Data directory containing the currently executable blobs
+	Datadir   string // Data directory containing the currently executable blobs 包含当前blobs的执行目录
 	Datacap   uint64 // Soft-cap of database storage (hard cap is larger due to overhead)
 	PriceBump uint64 // Minimum price bump percentage to replace an already existing nonce
 }

@@ -51,8 +51,8 @@ type subscriptionResult struct {
 type jsonrpcMessage struct {
 	Version string          `json:"jsonrpc,omitempty"`
 	ID      json.RawMessage `json:"id,omitempty"`
-	Method  string          `json:"method,omitempty"`
-	Params  json.RawMessage `json:"params,omitempty"`
+	Method  string          `json:"method,omitempty"` //方法
+	Params  json.RawMessage `json:"params,omitempty"` //参数
 	Error   *jsonError      `json:"error,omitempty"`
 	Result  json.RawMessage `json:"result,omitempty"`
 }

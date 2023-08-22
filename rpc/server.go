@@ -151,6 +151,7 @@ func (s *Server) serveSingleRequest(ctx context.Context, codec ServerCodec) {
 	if batch {
 		h.handleBatch(reqs)
 	} else {
+		//处理单个请求消息
 		h.handleMsg(reqs[0])
 	}
 }

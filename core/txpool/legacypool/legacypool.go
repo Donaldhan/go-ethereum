@@ -122,7 +122,7 @@ type BlockChain interface {
 	StateAt(root common.Hash) (*state.StateDB, error)
 }
 
-// Config are the configuration parameters of the transaction pool.
+// Config are the configuration parameters of the transaction pool. 交易池参数
 type Config struct {
 	Locals    []common.Address // Addresses that should be treated by default as local
 	NoLocals  bool             // Whether local transaction handling should be disabled
@@ -133,7 +133,7 @@ type Config struct {
 	PriceBump  uint64 // Minimum price bump percentage to replace an already existing transaction (nonce)
 
 	AccountSlots uint64 // Number of executable transaction slots guaranteed per account
-	GlobalSlots  uint64 // Maximum number of executable transaction slots for all accounts
+	GlobalSlots  uint64 // Maximum number of executable transaction slots for all accounts 所有账户的最大交易slots
 	AccountQueue uint64 // Maximum number of non-executable transaction slots permitted per account
 	GlobalQueue  uint64 // Maximum number of non-executable transaction slots for all accounts
 
