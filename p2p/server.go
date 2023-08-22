@@ -168,7 +168,7 @@ type Config struct {
 	clock mclock.Clock
 }
 
-// Server manages all peer connections.
+// Server manages all peer connections. 管理所有peer连接的
 type Server struct {
 	// Config fields may not be modified while the server is running.
 	Config

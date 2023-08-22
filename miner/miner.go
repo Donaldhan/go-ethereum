@@ -43,7 +43,7 @@ type Backend interface {
 	TxPool() *txpool.TxPool
 }
 
-// Config is the configuration parameters of mining.
+// Config is the configuration parameters of mining. 挖矿配置
 type Config struct {
 	Etherbase common.Address `toml:",omitempty"` // Public address for block mining rewards
 	ExtraData hexutil.Bytes  `toml:",omitempty"` // Block extra data set by the miner
