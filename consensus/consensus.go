@@ -120,7 +120,7 @@ type Engine interface {
 	Close() error
 }
 
-// PoW is a consensus engine based on proof-of-work.
+// PoW is a consensus engine based on proof-of-work. POW共识引擎
 type PoW interface {
 	Engine
 

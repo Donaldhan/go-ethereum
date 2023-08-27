@@ -279,6 +279,7 @@ func newWorker(config *Config, chainConfig *params.ChainConfig, engine consensus
 	worker.newpayloadTimeout = newpayloadTimeout
 
 	worker.wg.Add(4)
+	//主循环产生工作量证明
 	go worker.mainLoop()
 	go worker.newWorkLoop(recommit)
 	go worker.resultLoop()
@@ -516,6 +517,7 @@ func (w *worker) mainLoop() {
 			w.commitWork(req.interrupt, req.timestamp)
 
 		case req := <-w.getWorkCh:
+			//生成工作量证明？？
 			block, fees, err := w.generateWork(req.params)
 			req.result <- &newPayloadResult{
 				err:   err,
@@ -612,7 +614,7 @@ func (w *worker) taskLoop() {
 			w.pendingMu.Lock()
 			w.pendingTasks[sealHash] = task
 			w.pendingMu.Unlock()
-
+			//共识区块
 			if err := w.engine.Seal(w.chain, task.block, w.resultCh, stopCh); err != nil {
 				log.Warn("Block sealing failed", "err", err)
 				w.pendingMu.Lock()
@@ -641,6 +643,7 @@ func (w *worker) resultLoop() {
 			if w.chain.HasBlock(block.Hash(), block.NumberU64()) {
 				continue
 			}
+			//生成共识引擎hash
 			var (
 				sealhash = w.engine.SealHash(block.Header())
 				hash     = block.Hash()
@@ -678,7 +681,7 @@ func (w *worker) resultLoop() {
 				}
 				logs = append(logs, receipt.Logs...)
 			}
-			// Commit block and state to database.
+			// Commit block and state to database. 提交状态到db
 			_, err := w.chain.WriteBlockAndSetHead(block, receipts, logs, task.state, true)
 			if err != nil {
 				log.Error("Failed writing block to chain", "err", err)
@@ -687,7 +690,7 @@ func (w *worker) resultLoop() {
 			log.Info("Successfully sealed new block", "number", block.Number(), "sealhash", sealhash, "hash", hash,
 				"elapsed", common.PrettyDuration(time.Since(task.createdAt)))
 
-			// Broadcast the block and announce chain insertion event
+			// Broadcast the block and announce chain insertion event 广播区块
 			w.mux.Post(core.NewMinedBlockEvent{Block: block})
 
 		case <-w.exitCh:
@@ -942,6 +945,7 @@ func (w *worker) fillTransactions(interrupt *atomic.Int32, env *environment) err
 }
 
 // generateWork generates a sealing block based on the given parameters.
+// 根据给定参数生成一个共识工作量证明
 func (w *worker) generateWork(params *generateParams) (*types.Block, *big.Int, error) {
 	work, err := w.prepareWork(params)
 	if err != nil {

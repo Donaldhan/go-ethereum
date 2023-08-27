@@ -80,6 +80,7 @@ func (ethash *Ethash) APIs(chain consensus.ChainHeaderReader) []rpc.API {
 // Seal generates a new sealing request for the given input block and pushes
 // the result into the given channel. For the ethash engine, this method will
 // just panic as sealing is not supported anymore.
+// 生成一个共识请求
 func (ethash *Ethash) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
 	panic("ethash (pow) sealing not supported any more")
 }

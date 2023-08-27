@@ -151,7 +151,7 @@ func (miner *Miner) update() {
 				events.Unsubscribe()
 			}
 		case <-miner.startCh:
-			if canStart {
+			if canStart { //开始挖矿
 				miner.worker.start()
 			}
 			shouldStart = true

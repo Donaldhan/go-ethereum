@@ -74,6 +74,7 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 	if parent.GasUsed > parentGasTarget {
 		// If the parent block used more gas than its target, the baseFee should increase.
 		// max(1, parentBaseFee * gasUsedDelta / parentGasTarget / baseFeeChangeDenominator)
+		// 如果父块使用更多的gas比他的目标，则基础费用将会增加；
 		num.SetUint64(parent.GasUsed - parentGasTarget)
 		num.Mul(num, parent.BaseFee)
 		num.Div(num, denom.SetUint64(parentGasTarget))
@@ -82,7 +83,7 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 
 		return num.Add(parent.BaseFee, baseFeeDelta)
 	} else {
-		// Otherwise if the parent block used less gas than its target, the baseFee should decrease.
+		// Otherwise if the parent block used less gas than its target, the baseFee should decrease. 否则基础费下降
 		// max(0, parentBaseFee * gasUsedDelta / parentGasTarget / baseFeeChangeDenominator)
 		num.SetUint64(parentGasTarget - parent.GasUsed)
 		num.Mul(num, parent.BaseFee)

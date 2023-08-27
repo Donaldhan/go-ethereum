@@ -67,7 +67,7 @@ type Config = ethconfig.Config
 type Ethereum struct {
 	config *ethconfig.Config
 
-	// Handlers
+	// Handlers 交易池
 	txPool *txpool.TxPool
 
 	blockchain         *core.BlockChain
@@ -76,7 +76,7 @@ type Ethereum struct {
 	snapDialCandidates enode.Iterator
 	merger             *consensus.Merger
 
-	// DB interfaces
+	// DB interfaces 区块db数据库
 	chainDb ethdb.Database // Block chain database
 
 	eventMux       *event.TypeMux
@@ -89,8 +89,8 @@ type Ethereum struct {
 
 	APIBackend *EthAPIBackend
 
-	miner     *miner.Miner
-	gasPrice  *big.Int
+	miner     *miner.Miner // 挖矿者
+	gasPrice  *big.Int     //gas价格
 	etherbase common.Address
 
 	networkID     uint64
@@ -446,7 +446,7 @@ func (s *Ethereum) StartMining() error {
 		// If mining is started, we can disable the transaction rejection mechanism
 		// introduced to speed sync times.
 		s.handler.enableSyncedFeatures()
-
+		//开始挖矿
 		go s.miner.Start()
 	}
 	return nil
